@@ -1,0 +1,2 @@
+# NasAutoNameFixer
+能批量修复在第三方网站下载的电视剧/动漫，因为名称不规范，在Infuse或者Video Station搜刮的时候搜刮不到的问题
