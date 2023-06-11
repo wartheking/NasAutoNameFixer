@@ -11,10 +11,12 @@ def rename_files(folder_path, show_name, season, folder_entry, name_entry, seaso
 
     sorted_file_list = []
     for file_name in file_list:
+        filepureName = os.path.splitext(file_name)[0]
         # 从文件名的末尾开始向前查找数字作为集数
-        episode_match = re.search(r"\D(\d+)\D*$", file_name[::-1])
+        episode_match = re.search(r"(\d+)(?!.*\d)", filepureName)
         if episode_match:
-            episode = int(episode_match.group(1)[::-1])
+            episode = int(episode_match.group(1))
+            #print(episode)
             # 将文件名中的数字提取出来作为集数，将季数转换为英文形式
             season_prefix = "S" + season.zfill(2)
             new_file_name = "{}{}E{}".format(show_name, season_prefix, episode)
