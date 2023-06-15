@@ -18,16 +18,58 @@ def rename_files(folder_path, show_name, season, resolution, year, folder_entry,
             resolution = "1440p"
         resolution = "." + resolution
     sorted_file_list = []
+
+    #伪AI，往前找，找到数字不一样的那个，默认是集数
+    forLoopCount = 0
+    while True:
+        successGetEpisodeMatchStart = True
+        episodeDic = {}
+        for file_name in file_list:
+            filepureName = os.path.splitext(file_name)[0]
+            print(filepureName)
+            episode_match = re.search(r"\d+", filepureName)
+            for i in range(forLoopCount):
+                episode_match = re.search(r"\d+", filepureName[episode_match.end():])
+            if episode_match:
+                episode = int(episode_match.group(0))
+                print(episode)
+                if episodeDic.__contains__(episode):
+                    episodeDic[episode] += 1
+                else:
+                    episodeDic[episode] = 1
+            else:
+                messagebox.showinfo("处理失败", "电视剧存在有相同集数！")
+                # 清空输入框内容
+                folder_entry.delete(0, tk.END)
+                name_entry.delete(0, tk.END)
+                season_entry.delete(0, tk.END)
+                resolution_combo.set("")  # 清空分辨率下拉框选择
+                year_combo.set("")  # 清空年份下拉框选择
+                return
+        for ed in episodeDic:
+            if episodeDic[ed] > 1:
+                print(ed)
+                print(False)
+                successGetEpisodeMatchStart = False
+        if successGetEpisodeMatchStart:
+            break
+        else:
+            forLoopCount += 1
+            print(forLoopCount)
+
     for file_name in file_list:
         filepureName = os.path.splitext(file_name)[0]
         # 从文件名的末尾开始向前查找数字作为集数
-        episode_match = re.search(r"(\d+)(?!.*\d)", filepureName)
+        episode_match = re.search(r"\d+", filepureName)
+        for i in range(forLoopCount):
+            episode_match = re.search(r"\d+", filepureName[episode_match.end():])
         if episode_match:
-            episode = int(episode_match.group(1))
+            episode = int(episode_match.group(0))
+            print(episode)
             # 将文件名中的数字提取出来作为集数，将季数转换为英文形式
             season_prefix = "S" + season.zfill(2)
             
-            new_file_name = "{}{}{}.{}E{}".format(show_name, year, resolution, season_prefix, episode)
+            new_file_name = "{}.{}E{}{}{}".format(show_name, season_prefix, episode, year, resolution)
             sorted_file_list.append((file_name, episode, new_file_name))
 
     # 输出排序后的文件列表，并重命名文件
